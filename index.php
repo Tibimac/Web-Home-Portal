@@ -32,10 +32,10 @@ if(isset($_POST['connect']) && !empty($_POST['connect']))
 			$isAuthentificatedOK = 1;
 		}	
 	}
-	else
+/*	else
 	{
 		echo("Requête PAS OK");
-	}
+	} */
 	
 	mysqli_close($link);
  }
@@ -54,7 +54,8 @@ if ($isAuthentificatedOK == 0)
 }
 else if ($isAuthentificatedOK == 1)
 {
-	#	<!-Temporairement inclusion des liens perso via fichier HTML -->
+	#	<!- Temporairement inclusion des liens perso via fichier HTML -->
 	require_once('links.html');
+	#	<!- Futur : Inclusion des liens via sélection dans la base de données -->
 }
  ?>
