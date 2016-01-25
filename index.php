@@ -55,11 +55,11 @@ if ($isAuthentificatedOK == 0)
 				<form action="index.php" method="POST">
 					<p>
 						<span class="fontawesome-user"></span>
-						<input type="text" value="Username" name="form_id" onBlur="if(this.value == \'\') this.value = \'Username\'" onFocus="if(this.value == \'Username\') this.value = \'\'" required>
+						<input type="text" value="" placeholder="Username" name="form_id" required>
 					</p>
 					<p>
 						<span class="fontawesome-lock"></span>
-						<input type="password"  value="Password" name="form_password" onBlur="if(this.value == \'\') this.value = \'Password\'" onFocus="if(this.value == \'Password\') this.value = \'\'" required>
+						<input type="password"  value="" placeholder="Password" name="form_password" required>
 					</p>
 					<p>
 						<input type="submit" value="Sign In" name="login">
