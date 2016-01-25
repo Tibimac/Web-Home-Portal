@@ -1,7 +1,15 @@
-<?
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Web Home Portal - Login</title>
+		<link rel="stylesheet" href="css/style.css" media="screen" type="text/css"/>
+		<!-- CSS Style base on Marco Biedermann's work here : http://codepen.io/marcobiedermann/pen/Fybpf and modified by me (Thibault Le Cornec) for my need.-->
+	</head>
+<?php
 $isAuthentificatedOK = 0; // Auth non OK
 
-if(isset($_POST['connect']) && !empty($_POST['connect']))
+if(isset($_POST['login']) && !empty($_POST['login']))
 {		
 	// Connexion à la base de données
 	require_once('db_vars.php');
@@ -12,7 +20,7 @@ if(isset($_POST['connect']) && !empty($_POST['connect']))
 	$form_password = $_POST['form_password'];
  	
 	// Récupération du mot de passe et du mot de salage correspondant au user demandant à se connecter
-    $request = mysqli_query($link, "SELECT salt, password FROM USERS WHERE login = '".$form_id."'");
+    $request = mysqli_query($link, "SELECT * FROM USERS WHERE login = '".$form_id."'");
 
 	if ($request)
 	{
@@ -32,30 +40,43 @@ if(isset($_POST['connect']) && !empty($_POST['connect']))
 			$isAuthentificatedOK = 1;
 		}	
 	}
-/*	else
+	else
 	{
-		echo("Requête PAS OK");
-	} */
-	
-	mysqli_close($link);
+		echo("La requête a échouée !");
+	}
  }
- ?>
-
-<?
+ 
 if ($isAuthentificatedOK == 0)
 {
-?>
-	<form action="index.php" method="POST">
-		Identifiant :<input type="text" id="form_id" name="form_id"/></br/>
-		Mot de passe :<input type="password" id="form_password" name="form_password"/><br/>
-		<input type="submit" id="connect-button" value="Connexion" name="connect"/>
-	</form>
-<?
+	echo('
+	<body>
+		<div class="container">
+			<div id="login">
+				<form action="index.php" method="POST">
+					<p>
+						<span class="fontawesome-user"></span>
+						<input type="text" value="Username" name="form_id" onBlur="if(this.value == \'\') this.value = \'Username\'" onFocus="if(this.value == \'Username\') this.value = \'\'" required>
+					</p>
+					<p>
+						<span class="fontawesome-lock"></span>
+						<input type="password"  value="Password" name="form_password" onBlur="if(this.value == \'\') this.value = \'Password\'" onFocus="if(this.value == \'Password\') this.value = \'\'" required>
+					</p>
+					<p>
+						<input type="submit" value="Sign In" name="login">
+					</p>
+				</form>
+			</div>
+		</div>');
 }
 else if ($isAuthentificatedOK == 1)
 {
 	#	<!- Temporairement inclusion des liens perso via fichier HTML -->
 	require_once('links.html');
 	#	<!- Futur : Inclusion des liens via sélection dans la base de données -->
+
+	mysqli_close($link);
+	echo('
+	</body>
+</html>');
 }
- ?>
+?>
