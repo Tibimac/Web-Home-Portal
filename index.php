@@ -110,12 +110,21 @@ else if ($auth_OK)
 			{
 // 				echo("Request Liens OK");
 				// Parcours des sections
+				$i = 0;
 				while($link = mysqli_fetch_assoc($section_links))
 				{
 					$link_name = $link['name'];
 					$link_url = $link['url'];
-					
-					echo("<br/>$link_name : <a href='$link_url'>$link_url</a>");
+				
+					if ($i == 0)
+					{
+						echo("<a href='$link_url'>$link_name</a>");
+						$i++;
+					}	
+					else
+					{
+						echo("<br/><a href='$link_url'>$link_name</a>");
+					}
 				}
 				echo("</div>");
 			}

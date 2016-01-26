@@ -45,6 +45,8 @@ body
 #links h3
 {
 	font-size: large;
+	margin-bottom: 5px;
+	margin-top: 10px;
 }
 
 #links a
