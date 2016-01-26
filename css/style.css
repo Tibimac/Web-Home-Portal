@@ -42,6 +42,11 @@ body
 	margin-left: 20px;
 }
 
+#links h3
+{
+	font-size: large;
+}
+
 #links a
 {
 	color: #FFB501;
@@ -50,7 +55,7 @@ body
 
 #links a:hover
 {
-	color: #fff;
+	color: #eee;
 }
 
 links a:visited

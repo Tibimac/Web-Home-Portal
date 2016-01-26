@@ -6,38 +6,50 @@
 		<link rel="stylesheet" href="css/style.css" media="screen" type="text/css"/>
 		<!-- CSS Style base on Marco Biedermann's work here : http://codepen.io/marcobiedermann/pen/Fybpf and modified by me (Thibault Le Cornec) for my need.-->
 	</head>
+	<body>
 <?php
-$isAuthentificatedOK = 0; // Auth non OK
+	
+$auth_OK = false;
 
-if(isset($_POST['login']) && !empty($_POST['login']))
+/*##################################################
+# ===== Formulaire Soumis - Vérification IDs ===== #
+##################################################*/
+
+if(isset($_POST['signin']) && !empty($_POST['signin']))
 {		
+// 	echo("Signin Soumis");
 	// Connexion à la base de données
 	require_once('db_vars.php');
     $link = mysqli_connect($db_host, $db_user, $db_pass, $db_name, $db_port);   
     
 	// Récupération contenu des champs saisi par l'utilisateur
-	$form_id = $_POST['form_id'];
+	$form_login = $_POST['form_login'];
 	$form_password = $_POST['form_password'];
  	
-	// Récupération du mot de passe et du mot de salage correspondant au user demandant à se connecter
-    $request = mysqli_query($link, "SELECT * FROM USERS WHERE login = '".$form_id."'");
-
-	if ($request)
+	// Récupération des infos du user depuis la BDD.
+    $user_credentials = mysqli_query($link, "select * from USERS where login = '$form_login'");
+	if ($user_credentials)
 	{
-		$line = mysqli_fetch_assoc($request);
+// 		echo("Credentials Récupérés");
+		$user = mysqli_fetch_assoc($user_credentials);
 		
-		$salt = $line['salt']; //Récupération du mot de salage
+		// Récupération des infos de la DB
+		$id = $user['id'];
+		$login = $user['login'];
+		$password = $user['password'];
+		$salt = $user['salt'];
+		
+		// Salage + Cryptage du mot de passe saisi par l'utilisateur dans le formulaire de login
 		$salted_password = $salt.$form_password.$salt;
-		$encrypted_password = md5($salted_password); // Cryptage
-		
-		$stringToCheck = $form_id."-".$encrypted_password;
-	
-		$db_password = $line['password']; // Récupération du mot de passe du user de la base
-		$IDS = $form_id."-".$db_password;
-		
-		if ($stringToCheck === $IDS)
+		$encrypted_password = md5($salted_password);
+		$string_to_check = $form_login."-".$encrypted_password; // Concaténation login+password
+// 	echo($string_to_check);
+// 	echo("</br>");
+		$IDS = $form_login."-".$password;
+// 		echo($IDS);
+		if ($string_to_check === $IDS)
 		{
-			$isAuthentificatedOK = 1;
+			$auth_OK = true;
 		}	
 	}
 	else
@@ -46,37 +58,76 @@ if(isset($_POST['login']) && !empty($_POST['login']))
 	}
  }
  
-if ($isAuthentificatedOK == 0)
-{
-	echo('
-	<body>
-		<div class="container">
-			<div id="login">
-				<form action="index.php" method="POST">
-					<p>
-						<span class="fontawesome-user"></span>
-						<input type="text" value="" placeholder="Username" name="form_id" required>
-					</p>
-					<p>
-						<span class="fontawesome-lock"></span>
-						<input type="password"  value="" placeholder="Password" name="form_password" required>
-					</p>
-					<p>
-						<input type="submit" value="Sign In" name="login">
-					</p>
-				</form>
-			</div>
-		</div>');
-}
-else if ($isAuthentificatedOK == 1)
-{
-	#	<!- Temporairement inclusion des liens perso via fichier HTML -->
-	require_once('links.html');
-	#	<!- Futur : Inclusion des liens via sélection dans la base de données -->
+ 
+ 
+/*###########################################
+# ===== Affichage Formulaire ou Liens ===== #
+###########################################*/
 
+if (!$auth_OK)
+{
+	?>
+	<div class="container">
+		<div id="login">
+			<form action="index.php" method="POST">
+				<p>
+					<span class="fontawesome-user"></span>
+					<input type="text" value="" placeholder="Username" name="form_login" required>
+				</p>
+				<p>
+					<span class="fontawesome-lock"></span>
+					<input type="password"  value="" placeholder="Password" name="form_password" required>
+				</p>
+				<p>
+					<input type="submit" value="Sign In" name="signin">
+				</p>
+			</form>
+		</div>
+	</div>
+	<?
+}
+else if ($auth_OK)
+{
+	// Récupération des sections de l'utilisateur
+	$user_sections = mysqli_query($link, "select id, name from SECTIONS where SECTIONS.user_id = $id order by SECTIONS.position ASC");
+
+	if ($user_sections)
+	{
+// 		echo("Request Sections OK");
+		// Parcours des sections
+		while($section = mysqli_fetch_assoc($user_sections))
+		{
+
+			$section_id = $section['id'];
+			$section_name = $section['name'];
+			
+			echo("<div id=\"links\"><h3>".$section_name." :</h3>");
+			
+			// Récupération des liens liés à la section en cours
+			$link = mysqli_connect($db_host, $db_user, $db_pass, $db_name, $db_port);
+			$section_links = mysqli_query($link, "select name, url from LINKS where LINKS.section_id = $section_id order by LINKS.position ASC");
+			if ($section_links)
+			{
+// 				echo("Request Liens OK");
+				// Parcours des sections
+				while($link = mysqli_fetch_assoc($section_links))
+				{
+					$link_name = $link['name'];
+					$link_url = $link['url'];
+					
+					echo("<br/>$link_name : <a href='$link_url'>$link_url</a>");
+				}
+				echo("</div>");
+			}
+		}
+	}
+}
+
+// Si une connexion à la BDD a été faite, on déconnecte
+if (isset($link))
+{
 	mysqli_close($link);
-	echo('
-	</body>
-</html>');
 }
 ?>
+	</body>
+</html>
