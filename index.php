@@ -16,8 +16,7 @@ $auth_OK = false;
 ##################################################*/
 
 if(isset($_POST['signin']) && !empty($_POST['signin']))
-{		
-// 	echo("Signin Soumis");
+{
 	// Connexion à la base de données
 	require_once('db_vars.php');
     $link = mysqli_connect($db_host, $db_user, $db_pass, $db_name, $db_port);   
@@ -30,7 +29,6 @@ if(isset($_POST['signin']) && !empty($_POST['signin']))
     $user_credentials = mysqli_query($link, "select * from USERS where login = '$form_login'");
 	if ($user_credentials)
 	{
-// 		echo("Credentials Récupérés");
 		$user = mysqli_fetch_assoc($user_credentials);
 		
 		// Récupération des infos de la DB
@@ -43,10 +41,8 @@ if(isset($_POST['signin']) && !empty($_POST['signin']))
 		$salted_password = $salt.$form_password.$salt;
 		$encrypted_password = md5($salted_password);
 		$string_to_check = $form_login."-".$encrypted_password; // Concaténation login+password
-// 	echo($string_to_check);
-// 	echo("</br>");
 		$IDS = $form_login."-".$password;
-// 		echo($IDS);
+
 		if ($string_to_check === $IDS)
 		{
 			$auth_OK = true;
@@ -93,22 +89,19 @@ else if ($auth_OK)
 
 	if ($user_sections)
 	{
-// 		echo("Request Sections OK");
 		// Parcours des sections
 		while($section = mysqli_fetch_assoc($user_sections))
 		{
-
 			$section_id = $section['id'];
 			$section_name = $section['name'];
 			
-			echo("<div id=\"links\"><h3>".$section_name." :</h3>");
+			echo("<div class='section_links'><h3>".$section_name." :</h3>");
 			
 			// Récupération des liens liés à la section en cours
 			$link = mysqli_connect($db_host, $db_user, $db_pass, $db_name, $db_port);
 			$section_links = mysqli_query($link, "select name, url from LINKS where LINKS.section_id = $section_id order by LINKS.position ASC");
 			if ($section_links)
 			{
-// 				echo("Request Liens OK");
 				// Parcours des sections
 				$i = 0;
 				while($link = mysqli_fetch_assoc($section_links))
@@ -118,16 +111,16 @@ else if ($auth_OK)
 				
 					if ($i == 0)
 					{
-						echo("<a href='$link_url'>$link_name</a>");
+						echo("<img src='images/link.png' width='10px' heigh='10px'/>&nbsp;<a href='$link_url' target='_blank'>$link_name</a>");
 						$i++;
 					}	
 					else
 					{
-						echo("<br/><a href='$link_url'>$link_name</a>");
+						echo("<br/><img src='images/link.png' width='10px' heigh='10px'/>&nbsp;<a href='$link_url'   target='_blank'>$link_name</a>");
 					}
 				}
-				echo("</div>");
 			}
+			echo("</div>");
 		}
 	}
 }

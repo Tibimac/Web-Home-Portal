@@ -36,34 +36,42 @@ body
 	margin: 0;
 }
 
-#links
+.section_links
 {
-	margin-top: 20px;
-	margin-left: 20px;
+	margin: 20px;
+	float: left;
 }
 
-#links h3
+.section_links h3
 {
 	font-size: large;
 	margin-bottom: 5px;
 	margin-top: 10px;
 }
 
-#links a
+.section_links
 {
-	color: #FFB501;
-	text-decoration: none;
+    text-align: left;
 }
 
-#links a:hover
+.section_links a
+{
+	color: #FFB501;
+	text-decoration: none; 
+}
+
+
+.section_links a:hover
 {
 	color: #eee;
 }
 
-links a:visited
+/*
+.section_links a:visited
 {
 	color: #FFB501;
 }
+*/
 
 input
 {
